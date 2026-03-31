@@ -20,3 +20,9 @@ rust-version = "1.85"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
+
+[workspace.dependencies]
+dirs = "6"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+toml = "0.8"

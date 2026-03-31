@@ -258,6 +258,12 @@ Implement:
 - `.hecate/config.toml`
 - environment overrides
 
+Implementation notes (see `hecate-config`):
+
+- User path uses `dirs::config_dir()` / `XDG_CONFIG_HOME` when set (not a hard-coded home string).
+- Merge precedence for `worktree_base`: **user file → repo file → `HECATE_WORKTREE_BASE`** (each layer overrides the previous).
+- Missing user or repo files are fine (empty layer); invalid TOML is an error.
+
 ### Story 3: Metadata persistence
 
 Implement versioned metadata at `.hecate/metadata.json` with atomic writes.
