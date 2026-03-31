@@ -22,10 +22,6 @@ name = "hecate-core"
 version = "0.1.0"
 
 [[package]]
-name = "hecate-generate"
-version = "0.1.0"
-
-[[package]]
 name = "hecate-git"
 version = "0.1.0"
 

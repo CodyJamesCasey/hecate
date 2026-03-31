@@ -6,7 +6,6 @@ members = [
     "crates/hecate-agent",
     "crates/hecate-config",
     "crates/hecate-core",
-    "crates/hecate-generate",
     "crates/hecate-git",
     "crates/hecate-host",
     "crates/hecate-host-github",
