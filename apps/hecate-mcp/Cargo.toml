@@ -1,0 +1,14 @@
+[package]
+name = "hecate-mcp"
+description = "Hecate MCP server for AI agents"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+hecate-core = { path = "../../crates/hecate-core" }
+
+[lints]
+workspace = true

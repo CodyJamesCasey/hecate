@@ -1,0 +1,14 @@
+[package]
+name = "hecate-host-github"
+description = "GitHub implementation of hecate-host"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+hecate-host = { path = "../hecate-host" }
+
+[lints]
+workspace = true
