@@ -1,6 +1,22 @@
-[package]
-name = "hecate"
+[workspace]
+resolver = "3"
+members = [
+    "apps/hecate",
+    "apps/hecate-mcp",
+    "crates/hecate-agent",
+    "crates/hecate-config",
+    "crates/hecate-core",
+    "crates/hecate-git",
+    "crates/hecate-host",
+    "crates/hecate-host-github",
+]
+
+[workspace.package]
 version = "0.1.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/CodyJamesCasey/hecate"
+rust-version = "1.85"
 
-[dependencies]
+[workspace.lints.rust]
+unsafe_code = "forbid"

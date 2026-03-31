@@ -1,0 +1,11 @@
+[package]
+name = "hecate-agent"
+description = "Agent sessions, provider adapters, and rule/skill/MCP scaffolding"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[lints]
+workspace = true

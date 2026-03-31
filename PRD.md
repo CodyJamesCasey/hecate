@@ -139,8 +139,8 @@ vendor’s API.
 - `crates/hecate-host`: task and PR abstractions shared across code hosts (no
   vendor-specific APIs)
 - `crates/hecate-host-github`: GitHub implementation of those abstractions
-- `crates/hecate-agent`: Claude/Cursor session models and later adapters
-- `crates/hecate-generate`: future rule/skill/MCP config generation helpers
+- `crates/hecate-agent`: Claude/Cursor session models, provider adapters, and
+  rule/skill/MCP scaffolding (templates and validation)
 
 ```mermaid
 flowchart LR
@@ -150,8 +150,7 @@ flowchart LR
   hecateCore --> hecateConfig[hecateConfig]
   hecateCore --> hecateHost[hecate-host]
   hecateHost --> hecateHostGithub[hecate-host-github]
-  hecateCore --> hecateAgent[hecateAgent]
-  hecateAgent --> hecateGenerate[hecateGenerate]
+  hecateCore --> hecateAgent[hecate-agent]
 ```
 
 ## Architecture Rules
@@ -237,11 +236,10 @@ Build the system in this order:
 2. Local worktree workflow
 3. GitHub-first enrichment
 4. MCP
-5. Agent integrations
-6. Generation and scaffolding
+5. Agent integrations (sessions, launch/resume, and scaffolding)
 
-Do not jump ahead to advanced MCP or generation work before local CLI and
-metadata behavior are solid.
+Do not jump ahead to advanced MCP or agent/scaffolding work before local CLI
+and metadata behavior are solid.
 
 ## Story Breakdown
 
@@ -346,7 +344,9 @@ Expose:
 
 Expose task and repo context for agent workflows.
 
-## Epic 5: Agent Integrations
+## Epic 5: Agent Integrations And Scaffolding
+
+All of the following live in `crates/hecate-agent`.
 
 ### Story 16: Session metadata
 
@@ -369,8 +369,6 @@ Choose a practical strategy for launching or resuming sessions on Linux, Windows
 and macOS (e.g. delegating to the user’s shell, `xdg-open` / `start` / `open`,
 or documented manual flows) without overengineering PTY handling. Platform
 quirks belong in provider or OS-specific adapters, not in core assumptions.
-
-## Epic 6: Generation And Scaffolding
 
 ### Story 19: Rule generation
 
@@ -402,7 +400,7 @@ MCP/agent layer second. Keep the core free of any single code host’s API detai
 even though v1 is GitHub-first. The first milestone is a reliable local workflow
 with canonical pathing, typed config, repo-local metadata, and stable JSON
 output. After that, layer in GitHub issue and PR workflows, then MCP tools,
-then Claude/Cursor session support, and finally rule/skill/MCP generation
-helpers. The CLI and MCP must share the same core logic, and the architecture
+then Claude/Cursor session support and rule/skill/MCP scaffolding in
+`hecate-agent`. The CLI and MCP must share the same core logic, and the architecture
 should stay simple enough that another code-host adapter (e.g. GitLab) could be
 added later without rewriting the system.
