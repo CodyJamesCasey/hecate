@@ -286,6 +286,10 @@ Implement versioned **`{hecate_root}/metadata.json`** with atomic writes. Schema
 top-level **`version`**, map (or equivalent) from **main clone path** to lists of
 worktree records. Exact JSON shape and serde types live in `hecate-config`.
 
+Implementation: `hecate_config::read_metadata`, `write_metadata`, `metadata_path`;
+`MetadataFile` / `WorktreeRecord`; `METADATA_VERSION` **1**; atomic write via temp
+file + `sync_all` + `rename` (Windows replaces existing destination best-effort).
+
 ## Epic 2: Local Worktree Workflow
 
 ### Story 4: Canonical pathing
