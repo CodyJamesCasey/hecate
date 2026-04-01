@@ -78,7 +78,13 @@ The first public command surface should include:
 
 All worktrees should use one canonical path model:
 
-- `<base>/<repo-name>/<worktree-name>`
+- `<hecate_root>/<repo-name>/<worktree-name>`
+
+**`hecate_root`** is the directory that holds both **worktrees** and **metadata**
+(`metadata.json` at the root of that tree). Users set it via user or repo
+`config.toml`, or `HECATE_ROOT`. It may point at a global parking lot for many
+repos or a path under a specific clone (see repo `config.toml`). Relative values
+in repo config resolve against the repository root.
 
 No other pathing behavior should exist in code, docs, or config.
 
@@ -92,11 +98,15 @@ Use one config system:
 
 ### Metadata
 
-Use lightweight repo-local metadata:
+Use a **single versioned JSON file** under the configured root:
 
-- `.hecate/metadata.json`
+- `{hecate_root}/metadata.json`
 
-It should store:
+The document is **keyed by main repository clone path** (normalized absolute path
+of the primary working copy) so one `hecate_root` can serve multiple projects.
+Each entry lists worktrees registered for that clone.
+
+Per worktree, store at least:
 
 - worktree path
 - worktree name
@@ -104,6 +114,12 @@ It should store:
 - linked task or issue
 - timestamps
 - optional Claude/Cursor session references
+
+**`.hecate/`** in the repo is only for **`config.toml`** (and similar small
+overrides), not for `metadata.json`.
+
+Broken paths after moves or renames are out of scope for early versions; a later
+**`hecate doctor`** (or similar) command can repair common issues.
 
 ### Automation
 
@@ -261,12 +277,14 @@ Implement:
 Implementation notes (see `hecate-config`):
 
 - User path uses `dirs::config_dir()` / `XDG_CONFIG_HOME` when set (not a hard-coded home string).
-- Merge precedence for `worktree_base`: **user file → repo file → `HECATE_WORKTREE_BASE`** (each layer overrides the previous).
+- Merge precedence for `hecate_root`: **user file → repo file → `HECATE_ROOT`** (each layer overrides the previous).
 - Missing user or repo files are fine (empty layer); invalid TOML is an error.
 
 ### Story 3: Metadata persistence
 
-Implement versioned metadata at `.hecate/metadata.json` with atomic writes.
+Implement versioned **`{hecate_root}/metadata.json`** with atomic writes. Schema:
+top-level **`version`**, map (or equivalent) from **main clone path** to lists of
+worktree records. Exact JSON shape and serde types live in `hecate-config`.
 
 ## Epic 2: Local Worktree Workflow
 
@@ -274,7 +292,7 @@ Implement versioned metadata at `.hecate/metadata.json` with atomic writes.
 
 Implement one authoritative worktree destination function using:
 
-- `<base>/<repo-name>/<worktree-name>`
+- `<hecate_root>/<repo-name>/<worktree-name>`
 
 ### Story 5: `hecate start <task>`
 
@@ -308,8 +326,8 @@ Implement state reporting for:
 
 - repo root
 - current branch
-- metadata path
-- configured worktree base
+- metadata file path (`{hecate_root}/metadata.json` when `hecate_root` is set)
+- configured `hecate_root`
 - tracked worktree count
 
 ## Epic 3: GitHub-First Workflow
@@ -404,7 +422,7 @@ This project is on track when:
 Build `hecate` as a Rust monorepo with a strong local worktree CLI first and an
 MCP/agent layer second. Keep the core free of any single code host’s API details
 even though v1 is GitHub-first. The first milestone is a reliable local workflow
-with canonical pathing, typed config, repo-local metadata, and stable JSON
+with canonical pathing, typed config, `hecate_root` + `metadata.json`, and stable JSON
 output. After that, layer in GitHub issue and PR workflows, then MCP tools,
 then Claude/Cursor session support and rule/skill/MCP scaffolding in
 `hecate-agent`. The CLI and MCP must share the same core logic, and the architecture

@@ -5,7 +5,7 @@
 //! ```text
 //! cargo run -p hecate-config --example load_config
 //! cargo run -p hecate-config --example load_config -- /path/to/git/repo
-//! HECATE_WORKTREE_BASE=/tmp/wt cargo run -p hecate-config --example load_config
+//! HECATE_ROOT=/tmp/hecate-data cargo run -p hecate-config --example load_config
 //! ```
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
