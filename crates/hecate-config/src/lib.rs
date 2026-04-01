@@ -1,4 +1,4 @@
-//! Configuration paths, merging, and (later) `.hecate/metadata.json`.
+//! Configuration paths, TOML merging, and `{hecate_root}/metadata.json`.
 //!
 //! User config: `{config_dir}/hecate/config.toml` ([`dirs::config_dir`], i.e.
 //! `XDG_CONFIG_HOME/hecate/config.toml` on Linux).
@@ -9,10 +9,15 @@
 
 mod error;
 mod load;
+mod metadata;
 mod types;
 
 pub use error::ConfigError;
 pub use load::{LoadOptions, load};
+pub use metadata::{
+    METADATA_VERSION, MetadataError, MetadataFile, WorktreeRecord, metadata_path, read_metadata,
+    write_metadata,
+};
 
 use std::path::PathBuf;
 
