@@ -89,6 +89,7 @@ fn read_layer(path: &Path) -> Result<Option<FileConfig>, ConfigError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ConfigError;
     use std::fs;
 
     fn write_user(home: &Path, contents: &str) {
@@ -177,5 +178,44 @@ worktree_base = "/from/user"
             ..Default::default()
         };
         assert!(load_merged(&opts, None).is_err());
+    }
+
+    #[test]
+    fn invalid_toml_yields_toml_error_variant() {
+        let tmp = tempfile::tempdir().unwrap();
+        write_user(tmp.path(), "worktree_base = ");
+        let opts = LoadOptions {
+            config_home_override: Some(tmp.path().to_path_buf()),
+            ..Default::default()
+        };
+        let err = load_merged(&opts, None).unwrap_err();
+        assert!(
+            matches!(err, ConfigError::Toml { .. }),
+            "expected ConfigError::Toml, got {err:?}"
+        );
+        let msg = err.to_string();
+        assert!(
+            msg.contains("invalid TOML"),
+            "message should mention TOML: {msg}"
+        );
+    }
+
+    /// `config.toml` must be a file; if it is a directory, reading fails with `Read`.
+    #[test]
+    fn user_config_path_is_directory_yields_read_error() {
+        let tmp = tempfile::tempdir().unwrap();
+        let hecate = tmp.path().join("hecate");
+        let bogus = hecate.join("config.toml");
+        fs::create_dir_all(&bogus).unwrap();
+
+        let opts = LoadOptions {
+            config_home_override: Some(tmp.path().to_path_buf()),
+            ..Default::default()
+        };
+        let err = load_merged(&opts, None).unwrap_err();
+        assert!(
+            matches!(err, ConfigError::Read { .. }),
+            "expected ConfigError::Read, got {err:?}"
+        );
     }
 }
