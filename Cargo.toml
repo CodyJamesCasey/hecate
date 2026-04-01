@@ -24,5 +24,6 @@ unsafe_code = "forbid"
 [workspace.dependencies]
 dirs = "6"
 serde = { version = "1", features = ["derive"] }
+tempfile = "3"
 thiserror = "2"
 toml = "0.8"
