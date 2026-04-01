@@ -110,18 +110,6 @@ mod tests {
     }
 
     #[test]
-    fn legacy_worktree_base_key_still_loads() {
-        let tmp = tempfile::tempdir().unwrap();
-        write_user(tmp.path(), r#"worktree_base = "/legacy""#);
-        let opts = LoadOptions {
-            config_home_override: Some(tmp.path().to_path_buf()),
-            ..Default::default()
-        };
-        let c = load_merged(&opts, None).unwrap();
-        assert_eq!(c.hecate_root, Some(PathBuf::from("/legacy")));
-    }
-
-    #[test]
     fn user_file_sets_hecate_root() {
         let tmp = tempfile::tempdir().unwrap();
         write_user(

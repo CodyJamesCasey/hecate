@@ -7,7 +7,6 @@ use serde::Deserialize;
 pub struct FileConfig {
     /// Root directory for worktrees and `{hecate_root}/metadata.json`
     /// (`<hecate_root>/<repo>/<worktree-name>`).
-    #[serde(alias = "worktree_base")]
     pub hecate_root: Option<PathBuf>,
 }
 
