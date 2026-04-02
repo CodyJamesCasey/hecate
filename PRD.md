@@ -88,6 +88,26 @@ in repo config resolve against the repository root.
 
 No other pathing behavior should exist in code, docs, or config.
 
+**`repo-name` segment (directory under `hecate_root`):**
+
+- **Default:** sanitized **last path component** of the main clone (`repo_root`)
+  (e.g. `~/src/hecate` → `hecate`).
+- **Hybrid disambiguation:** if that segment would **collide** with another **already
+  registered** clone under the same `hecate_root` (same default segment, different
+  clone), use **`{sanitized_basename}-{short_id}`**, where **`short_id`** is a
+  truncated **stable hash** of a normalized clone identity (e.g. absolute or
+  canonical `repo_root`). Exact collision detection uses **metadata** (and possibly
+  on-disk checks) when registering or resolving paths—see Story 4 / 5.
+- **Sanitization:** normalize or replace characters unsafe or awkward on the
+  target OS path (separators, reserved names, etc.); document the rules in code.
+
+**`worktree-name` segment:** same sanitization discipline; reject empty names,
+`..`, and path separators.
+
+**Metadata keys vs disk layout:** the JSON map key remains the **main clone path**
+(ideally **`canonicalize`** when it succeeds so symlink spellings dedupe); path
+**construction** for new worktrees uses the **repo segment** rules above.
+
 ### Config
 
 Use one config system:
@@ -294,9 +314,16 @@ file + `sync_all` + `rename` (Windows replaces existing destination best-effort)
 
 ### Story 4: Canonical pathing
 
-Implement one authoritative worktree destination function using:
+Implement one authoritative worktree destination model:
 
 - `<hecate_root>/<repo-name>/<worktree-name>`
+
+Deliver **pure path helpers** in **`hecate-core`** (join, validate, sanitize
+segments, default repo segment from `repo_root`). Deliver **`resolve_hecate_root`**
+(absolute `hecate_root`, relative to `repo_root` when configured) in
+**`hecate-config`** next to **`load`**. Implement **hybrid repo segment**
+selection where metadata (or equivalent) is available so same basename under
+`hecate_root` can map to different clones via **`{basename}-{short_id}`**.
 
 ### Story 5: `hecate start <task>`
 
