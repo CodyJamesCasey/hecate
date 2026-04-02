@@ -349,6 +349,11 @@ Implement:
 - `--json`
 - metadata-aware task display
 
+Implementation notes:
+
+- **`hecate list`** / **`hecate list --json`**: optional **`--cwd`**; resolves `hecate_root`, `clone_identity_key`, `read_metadata`, prints worktrees for this clone only (name, branch, base branch, task, path, created).
+- **Library:** `hecate::list::worktrees_for_cwd` for tests and reuse.
+
 ### Story 7: `hecate rm`
 
 Implement:
