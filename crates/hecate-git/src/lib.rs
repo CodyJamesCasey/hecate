@@ -123,6 +123,33 @@ impl GitRepo {
         }
         Ok(())
     }
+
+    /// `git worktree remove [--force] <path>` (path is the linked checkout directory).
+    pub fn worktree_remove(&self, path: &Path, force: bool) -> Result<(), GitError> {
+        let mut cmd = Command::new("git");
+        cmd.current_dir(self.root())
+            .args(["worktree", "remove"])
+            .arg(path);
+        if force {
+            cmd.arg("--force");
+        }
+        let output = cmd.output()?;
+
+        if !output.status.success() {
+            return Err(GitError::Failed {
+                cmd: {
+                    let mut v = vec!["git".into(), "worktree".into(), "remove".into()];
+                    if force {
+                        v.push("--force".into());
+                    }
+                    v.push(path.display().to_string());
+                    v
+                },
+                stderr: String::from_utf8_lossy(&output.stderr).trim().to_string(),
+            });
+        }
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -174,6 +201,9 @@ mod tests {
         repo.worktree_add_branch(&wt, "task/1", "HEAD").unwrap();
         assert!(wt.join("README.md").exists());
         assert!(repo.local_branch_exists("task/1").unwrap());
+
+        repo.worktree_remove(&wt, false).unwrap();
+        assert!(!wt.exists());
     }
 
     #[test]
