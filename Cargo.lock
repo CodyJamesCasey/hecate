@@ -315,6 +315,8 @@ dependencies = [
  "hecate-config",
  "hecate-core",
  "hecate-git",
+ "serde",
+ "serde_json",
  "tempfile",
  "thiserror",
 ]

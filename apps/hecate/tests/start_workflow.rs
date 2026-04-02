@@ -63,3 +63,32 @@ fn start_registers_worktree_and_metadata() {
     assert_eq!(list[0].name, "77");
     assert_eq!(list[0].task.as_deref(), Some("77"));
 }
+
+#[test]
+fn list_worktrees_for_clone_after_start() {
+    let parking = tempfile::tempdir().unwrap();
+    let repo = tempfile::tempdir().unwrap();
+    init_repo(repo.path());
+
+    let hecate_dir = repo.path().join(".hecate");
+    fs::create_dir_all(&hecate_dir).unwrap();
+    let root_str = parking.path().to_string_lossy().replace('\\', "/");
+    fs::write(
+        hecate_dir.join("config.toml"),
+        format!("hecate_root = \"{root_str}\"\n"),
+    )
+    .unwrap();
+
+    assert!(
+        hecate::list::worktrees_for_cwd(repo.path())
+            .unwrap()
+            .is_empty()
+    );
+
+    hecate::start::run("99", repo.path()).unwrap();
+    let records = hecate::list::worktrees_for_cwd(repo.path()).unwrap();
+    assert_eq!(records.len(), 1);
+    assert_eq!(records[0].name, "99");
+    assert_eq!(records[0].branch, "task/99");
+    assert_eq!(records[0].task.as_deref(), Some("99"));
+}
