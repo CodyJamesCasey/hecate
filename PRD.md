@@ -363,6 +363,12 @@ Implement:
 - optional force mode
 - metadata cleanup
 
+Implementation notes:
+
+- **`hecate rm <name>`** or **`hecate rm --path <PATH>`** (exactly one); optional **`--cwd`**, **`--force`** → `git worktree remove --force`.
+- **`hecate-git`:** `GitRepo::worktree_remove`.
+- Resolves metadata for **`clone_identity_key`**, removes matching **`WorktreeRecord`**, drops empty repo keys from the map, **`write_metadata`**.
+
 ### Story 8: `hecate state`
 
 Implement state reporting for:

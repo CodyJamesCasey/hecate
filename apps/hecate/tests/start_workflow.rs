@@ -92,3 +92,32 @@ fn list_worktrees_for_clone_after_start() {
     assert_eq!(records[0].branch, "task/99");
     assert_eq!(records[0].task.as_deref(), Some("99"));
 }
+
+#[test]
+fn rm_by_name_removes_checkout_and_metadata() {
+    let parking = tempfile::tempdir().unwrap();
+    let repo = tempfile::tempdir().unwrap();
+    init_repo(repo.path());
+
+    let hecate_dir = repo.path().join(".hecate");
+    fs::create_dir_all(&hecate_dir).unwrap();
+    let root_str = parking.path().to_string_lossy().replace('\\', "/");
+    fs::write(
+        hecate_dir.join("config.toml"),
+        format!("hecate_root = \"{root_str}\"\n"),
+    )
+    .unwrap();
+
+    hecate::start::run("42", repo.path()).unwrap();
+    let seg = hecate_core::repo_default_segment(repo.path()).unwrap();
+    let wt = parking.path().join(&seg).join("42");
+    assert!(wt.join("f.txt").exists());
+
+    hecate::rm::run(repo.path(), Some("42".into()), None, false).unwrap();
+    assert!(!wt.exists());
+    assert!(
+        hecate::list::worktrees_for_cwd(repo.path())
+            .unwrap()
+            .is_empty()
+    );
+}
