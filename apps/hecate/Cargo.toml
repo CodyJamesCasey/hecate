@@ -8,7 +8,17 @@ repository.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+chrono = { workspace = true }
+clap = { workspace = true }
+hecate-config = { path = "../../crates/hecate-config" }
 hecate-core = { path = "../../crates/hecate-core" }
+hecate-git = { path = "../../crates/hecate-git" }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+hecate-config = { path = "../../crates/hecate-config" }
+hecate-core = { path = "../../crates/hecate-core" }
+tempfile = { workspace = true }
 
 [lints]
 workspace = true

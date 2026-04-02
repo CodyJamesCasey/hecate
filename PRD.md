@@ -334,6 +334,13 @@ Implement:
 - worktree creation
 - metadata registration
 
+Implementation notes:
+
+- **`hecate-core::task`:** `task_layout` → git branch `task/<slug>` and worktree directory name `<slug>` via `sanitize_segment`.
+- **`hecate-git`:** subprocess `git` — `rev-parse --show-toplevel`, `symbolic-ref` for current branch (error if detached), `worktree add -b`, `rev-parse --verify` for existing branches.
+- **CLI:** `hecate start <task>` and optional `--cwd DIR`; requires configured `hecate_root`, non-detached HEAD, and no duplicate branch / registered worktree for that task.
+- **Paths:** `resolve_hecate_root`, `choose_repo_segment`, `worktree_directory`; metadata key `clone_identity_key(repo_root)`.
+
 ### Story 6: `hecate list`
 
 Implement:
