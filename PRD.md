@@ -379,6 +379,13 @@ Implement state reporting for:
 - configured `hecate_root`
 - tracked worktree count
 
+Implementation notes:
+
+- **`hecate state`** / **`hecate state --json`**; optional **`--cwd`**.
+- Shows **absolute** repo root, **current branch** or **(detached HEAD)**, **configured** `hecate_root` (merged config value), **resolved** absolute `hecate_root`, **`metadata_path`**, and **worktree count** for this clone from metadata (0 if unset or no rows).
+- **Library:** `hecate::state::gather` / `gather_opts` / `StateSnapshot` / `StateOptions` (tests: isolated `config_home_override`, optional skip of **`HECATE_ROOT`**).
+- **`hecate-config`:** **`load_without_env_hecate_root`** — same TOML merge as **`load`** but does not read **`HECATE_ROOT`** (used when gathering state with `use_process_hecate_env: false`).
+
 ## Epic 3: GitHub-First Workflow
 
 ### Story 9: GitHub issue resolution

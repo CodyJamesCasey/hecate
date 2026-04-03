@@ -36,6 +36,14 @@ enum Command {
         #[arg(long, value_name = "DIR")]
         cwd: Option<PathBuf>,
     },
+    /// Show repository, branch, hecate_root, metadata path, and tracked worktree count.
+    State {
+        /// Print machine-readable JSON.
+        #[arg(long)]
+        json: bool,
+        #[arg(long, value_name = "DIR")]
+        cwd: Option<PathBuf>,
+    },
     /// Create a new branch and worktree for a task, and register it in metadata.
     Start {
         /// Task label (e.g. issue number or short slug); becomes directory name and `task/<slug>` branch.
@@ -68,6 +76,15 @@ fn main() {
                 .or_else(|| std::env::current_dir().ok())
                 .unwrap_or_else(|| PathBuf::from("."));
             if let Err(e) = hecate::rm::run(&base, name, path, force) {
+                eprintln!("{e}");
+                std::process::exit(1);
+            }
+        }
+        Command::State { json, cwd } => {
+            let base = cwd
+                .or_else(|| std::env::current_dir().ok())
+                .unwrap_or_else(|| PathBuf::from("."));
+            if let Err(e) = hecate::state::run(&base, json) {
                 eprintln!("{e}");
                 std::process::exit(1);
             }

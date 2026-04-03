@@ -121,3 +121,55 @@ fn rm_by_name_removes_checkout_and_metadata() {
             .is_empty()
     );
 }
+
+#[test]
+fn state_without_hecate_root_shows_unconfigured() {
+    let repo = tempfile::tempdir().unwrap();
+    let isolated_home = tempfile::tempdir().unwrap();
+    init_repo(repo.path());
+    let s = hecate::state::gather_opts(
+        repo.path(),
+        hecate::state::StateOptions {
+            config_home_override: Some(isolated_home.path().to_path_buf()),
+            use_process_hecate_env: false,
+        },
+    )
+    .unwrap();
+    assert_eq!(s.current_branch.as_deref(), Some("main"));
+    assert!(s.hecate_root_configured.is_none());
+    assert!(s.hecate_root_resolved.is_none());
+    assert!(s.metadata_path.is_none());
+    assert_eq!(s.worktree_count, 0);
+}
+
+#[test]
+fn state_counts_tracked_worktrees() {
+    let parking = tempfile::tempdir().unwrap();
+    let repo = tempfile::tempdir().unwrap();
+    init_repo(repo.path());
+
+    let hecate_dir = repo.path().join(".hecate");
+    fs::create_dir_all(&hecate_dir).unwrap();
+    let root_str = parking.path().to_string_lossy().replace('\\', "/");
+    fs::write(
+        hecate_dir.join("config.toml"),
+        format!("hecate_root = \"{root_str}\"\n"),
+    )
+    .unwrap();
+
+    let isolated_home = tempfile::tempdir().unwrap();
+    let opts = hecate::state::StateOptions {
+        config_home_override: Some(isolated_home.path().to_path_buf()),
+        use_process_hecate_env: false,
+    };
+    let before = hecate::state::gather_opts(repo.path(), opts.clone()).unwrap();
+    assert_eq!(before.worktree_count, 0);
+    assert_eq!(
+        before.metadata_path,
+        Some(hecate_config::metadata_path(parking.path()))
+    );
+
+    hecate::start::run("5", repo.path()).unwrap();
+    let after = hecate::state::gather_opts(repo.path(), opts).unwrap();
+    assert_eq!(after.worktree_count, 1);
+}

@@ -15,7 +15,7 @@ mod resolve;
 mod types;
 
 pub use error::ConfigError;
-pub use load::{LoadOptions, load};
+pub use load::{LoadOptions, load, load_without_env_hecate_root};
 pub use metadata::{
     METADATA_VERSION, MetadataError, MetadataFile, WorktreeRecord, metadata_path, read_metadata,
     write_metadata,
