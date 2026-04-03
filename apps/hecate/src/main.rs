@@ -13,6 +13,11 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// GitHub issue lookup (numeric task refs).
+    Issue {
+        #[command(subcommand)]
+        command: IssueCommand,
+    },
     /// List worktrees registered for this clone (from metadata).
     List {
         /// Print machine-readable JSON.
@@ -54,9 +59,41 @@ enum Command {
     },
 }
 
+#[derive(Subcommand)]
+enum IssueCommand {
+    /// Print issue title, URL, and body from the GitHub API.
+    Show {
+        /// Issue or PR number on GitHub.
+        number: u64,
+        /// Print JSON (`hecate_host::Issue`).
+        #[arg(long)]
+        json: bool,
+        #[arg(long, value_name = "DIR")]
+        cwd: Option<PathBuf>,
+        /// `owner/repo` on github.com (skip inferring from `origin`).
+        #[arg(long, value_name = "OWNER/REPO")]
+        repo: Option<String>,
+    },
+}
+
 fn main() {
     let cli = Cli::parse();
     match cli.command {
+        Command::Issue { command } => {
+            let IssueCommand::Show {
+                number,
+                json,
+                cwd,
+                repo,
+            } = command;
+            let base = cwd
+                .or_else(|| std::env::current_dir().ok())
+                .unwrap_or_else(|| PathBuf::from("."));
+            if let Err(e) = hecate::issue::run_show(&base, number, json, repo) {
+                eprintln!("{e}");
+                std::process::exit(1);
+            }
+        }
         Command::List { json, cwd } => {
             let base = cwd
                 .or_else(|| std::env::current_dir().ok())

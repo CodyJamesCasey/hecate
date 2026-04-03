@@ -315,6 +315,7 @@ dependencies = [
  "hecate-config",
  "hecate-core",
  "hecate-git",
+ "hecate-host-github",
  "serde",
  "serde_json",
  "tempfile",
@@ -357,12 +358,18 @@ dependencies = [
 [[package]]
 name = "hecate-host"
 version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "hecate-host-github"
 version = "0.1.0"
 dependencies = [
  "hecate-host",
+ "serde",
+ "serde_json",
+ "thiserror",
 ]
 
 [[package]]
