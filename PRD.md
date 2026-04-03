@@ -393,6 +393,13 @@ Implementation notes:
 Add GitHub issue lookup so numeric task references can become rich task
 objects.
 
+Implementation notes:
+
+- **`hecate-host`:** shared **`Issue`** type (`number`, `title`, `state`, `html_url`, `body`).
+- **`hecate-host-github`:** **`gh api repos/{owner}/{repo}/issues/{number}`** (GitHub CLI auth via **`gh auth login`**); parse **`owner/repo`** from **`git remote get-url origin`** (`github.com` HTTPS/SSH) or **`--repo OWNER/REPO`**. A direct HTTP adapter may be added later.
+- **CLI:** **`hecate issue show <NUMBER>`** with **`--json`**, **`--cwd`**, **`--repo`**.
+- **`hecate-git`:** **`GitRepo::remote_url`**.
+
 ### Story 10: GitHub-backed task start
 
 Allow `hecate start 123` to enrich task context with GitHub issue data.

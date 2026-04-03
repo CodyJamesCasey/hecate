@@ -13,6 +13,7 @@ clap = { workspace = true }
 hecate-config = { path = "../../crates/hecate-config" }
 hecate-core = { path = "../../crates/hecate-core" }
 hecate-git = { path = "../../crates/hecate-git" }
+hecate-host-github = { path = "../../crates/hecate-host-github" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

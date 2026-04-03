@@ -69,6 +69,11 @@ impl GitRepo {
         &self.root
     }
 
+    /// `git remote get-url <name>` (e.g. `origin`).
+    pub fn remote_url(&self, remote: &str) -> Result<String, GitError> {
+        git_output(self.root(), &["remote", "get-url", remote])
+    }
+
     /// Short name of the checked-out branch, or [`GitError::DetachedHead`].
     pub fn current_branch(&self) -> Result<String, GitError> {
         let out = git_output(self.root(), &["symbolic-ref", "-q", "--short", "HEAD"]).map_err(
