@@ -25,6 +25,11 @@ pub fn load(options: &LoadOptions) -> Result<ResolvedConfig, ConfigError> {
     load_merged(options, from_env)
 }
 
+/// Same merge as [`load`], but does **not** read **`HECATE_ROOT`** from the process environment.
+pub fn load_without_env_hecate_root(options: &LoadOptions) -> Result<ResolvedConfig, ConfigError> {
+    load_merged(options, None)
+}
+
 /// Like [`load`], but uses `env_hecate_root` instead of reading the process
 /// environment (for tests and embedding).
 pub(crate) fn load_merged(
